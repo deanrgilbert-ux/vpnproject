@@ -23,12 +23,14 @@
 - [ ] Resource usage kept at a minimum
 - [ ] Low–latency
 - [ ] Adhering to industry–standard encryption protocols
-
 <br>
+
 ---
+
 ##### References  
 <small>
-Australian Cyber Security Centre. (2025). *Information security manual (ISM) (March 2025 ed.).* Australian Signals Directorate. [https://www.cyber.gov.au/resources-business-and-government/essential-cybersecurity/ism](https://www.cyber.gov.au/resources-business-and-government/essential-cybersecurity/ism)  
+  
+Australian Cyber Security Centre. (2025). *Information security manual (ISM) (March 2025 ed.).* Australian Signals Directorate. https://www.cyber.gov.au/resources-business-and-government/essential-cybersecurity/ism
 
 Jing, J., Helal, A. S., & Elmagarmid, A. (1999). *Client-server computing in mobile environments.* ACM Computing Surveys (CSUR), *31(2)*, 117-157. [https://doi.org/10.1145/319806.31981](https://doi.org/10.1145/319806.31981)  
 
