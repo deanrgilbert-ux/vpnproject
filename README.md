@@ -3,6 +3,23 @@ VPN implementation in Python for Linux (and potentially other Unix-like operatin
 
 Tested with **Python 3.12.6**
 
+Create a tunnel interface (requires superuser permissions):
+**Server**
+```shell
+modprobe tun
+ip tuntap add dev tun0 mode tun
+ip addr add 10.111.0.1/24 dev tun0
+ip link set dev tun0 up
+```
+
+**Client**
+```shell
+modprobe tun
+ip tuntap add dev tun0 mode tun
+ip addr add 10.111.0.2/24 dev tun0
+ip link set dev tun0 up
+```
+
 ## Project Milestones
 - [ ] Virtual interface created and data encapsulated inside the VPN's UDP packets  
 - [ ] UDP packet sent by VPN from one device to another  
