@@ -1,4 +1,25 @@
 # VPN Project
+VPN implementation in Python for Linux (and potentially other Unix-like operating systems).
+
+Tested with **Python 3.12.6**
+
+Create a tunnel interface (requires superuser permissions):
+
+**Server**
+```shell
+modprobe tun
+ip tuntap add dev tun0 mode tun
+ip addr add 10.111.0.1/24 dev tun0
+ip link set dev tun0 up
+```
+
+**Client**
+```shell
+modprobe tun
+ip tuntap add dev tun0 mode tun
+ip addr add 10.111.0.2/24 dev tun0
+ip link set dev tun0 up
+```
 
 ## Project Milestones
 - [ ] Virtual interface created and data encapsulated inside the VPN's UDP packets  
@@ -30,7 +51,7 @@
 ##### References  
 <small>
   
-Australian Cyber Security Centre. (2025). *Information security manual (ISM) (March 2025 ed.).* Australian Signals Directorate. (https://www.cyber.gov.au/resources-business-and-government/essential-cybersecurity/ism
+Australian Cyber Security Centre. (2025). *Information security manual (ISM) (March 2025 ed.).* Australian Signals Directorate. https://www.cyber.gov.au/resources-business-and-government/essential-cybersecurity/ism
 
 Jing, J., Helal, A. S., & Elmagarmid, A. (1999). *Client-server computing in mobile environments.* ACM Computing Surveys (CSUR), *31(2)*, 117-157. [https://doi.org/10.1145/319806.31981](https://doi.org/10.1145/319806.31981)  
 
