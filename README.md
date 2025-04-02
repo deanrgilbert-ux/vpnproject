@@ -5,26 +5,27 @@ Tested with **Python 3.12.6**
 
 Create a tunnel interface (requires superuser permissions):
 
-**Server**
+Run
 ```shell
-modprobe tun
-ip tuntap add dev tun0 mode tun
-ip addr add 10.111.0.1/24 dev tun0
-ip link set dev tun0 up
-```
+docker-compose build
+docker-compose up
+docker ps
 
-**Client**
-```shell
-modprobe tun
-ip tuntap add dev tun0 mode tun
-ip addr add 10.111.0.2/24 dev tun0
-ip link set dev tun0 up
+# Validate no connectivity between client and internal host
+docker exec -it <client-container-id> ping 192.168.60.7
+
+# Start VPN client and server
+docker exec -it <client-container-id> /volumes/client/client.py &
+docker exec -it <server-container-id> /volumes/server/server.py &
+
+# Validate the connectivity between client and internal host
+docker exec -it <client-conatiner-id> ping 192.168.60.7
 ```
 
 ## Project Milestones
-- [ ] Virtual interface created and data encapsulated inside the VPN's UDP packets  
-- [ ] UDP packet sent by VPN from one device to another  
-- [ ] Basic UDP client–server communication established; packets can be sent both ways  
+- [x] Virtual interface created and data encapsulated inside the VPN's UDP packets  
+- [x] UDP packet sent by VPN from one device to another  
+- [x] Basic UDP client–server communication established; packets can be sent both ways  
 - [ ] Basic encryption/decryption method implemented for securing network traffic  
 - [ ] Authentication configured  
 - [ ] Performance testing conducted with iperf  
