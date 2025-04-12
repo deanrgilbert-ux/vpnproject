@@ -1,5 +1,3 @@
-version: "3"
-
 services:
     VPN_Client:
         image: handsonsecurity/seed-ubuntu:large
