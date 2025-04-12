@@ -35,7 +35,7 @@ docker exec -it client-10.9.0.5  ping 192.168.60.7
 
 ## Functional Requirements
 - [x] Working prototype developed to align with the client–server model (Jing et al., 1999, p. 30)
-- [ ] Encryption implemented using asymmetric algorithms like ECDSA, ML–DSA, and ML–DLM (Australian Cyber Security Centre, 2025, p. 178) or the newly developed quantum–resistant FIPS–203 standard (NIST, 2024) 
+- [ ] Encryption implemented using asymmetric algorithms like ECDH, ECDSA, ML–DSA, and RSA or the newly developed post-quantum ML-KEM (Australian Cyber Security Centre, 2025, p. 178) or FIPS–203 standard (NIST, 2024) 
 - [ ] User authentication  
 - [x] UDP tunnelling 
 - [ ] Verbose logging and debugging features
