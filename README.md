@@ -25,7 +25,7 @@ docker exec -it client-10.9.0.5  ping 192.168.60.7
 - [x] Virtual interface created and data encapsulated inside the VPN's UDP packets  
 - [x] UDP packet sent by VPN from one device to another  
 - [x] Basic UDP client–server communication established; packets can be sent both ways  
-- [ ] Basic encryption/decryption method implemented for securing network traffic  
+- [x] Basic encryption/decryption method implemented for securing network traffic  
 - [ ] Authentication configured  
 - [ ] Performance testing conducted with iperf  
 - [ ] Functional prototype deployed  
@@ -34,7 +34,7 @@ docker exec -it client-10.9.0.5  ping 192.168.60.7
 
 ## Functional Requirements
 - [x] Working prototype developed to align with the client–server model (Jing et al., 1999, p. 30)
-- [ ] Encryption implemented using asymmetric algorithms like ECDH, ECDSA, ML–DSA, and RSA or the newly developed post–quantum ML-KEM (Australian Cyber Security Centre, 2025, p. 178) or FIPS–203 standard (NIST, 2024) 
+- [ ] Encryption implemented using asymmetric algorithms like ECDH, ECDSA, and RSA or the newly developed post–quantum ML–DSA, ML-KEM (Australian Cyber Security Centre, 2025, p. 178) or FIPS–203 standard (NIST, 2024) 
 - [ ] User authentication  
 - [x] UDP tunnelling 
 - [ ] Verbose logging and debugging features
@@ -43,7 +43,7 @@ docker exec -it client-10.9.0.5  ping 192.168.60.7
 ## Non–Functional Requirements
 - [ ] Resource usage kept at a minimum
 - [ ] Low–latency
-- [ ] Adhering to industry–standard encryption protocols
+- [x] Adhering to industry–standard encryption protocols
 <br>
 
 ---
