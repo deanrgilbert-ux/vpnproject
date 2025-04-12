@@ -12,14 +12,14 @@ docker-compose up
 docker ps
 
 # Validate no connectivity between client and internal host
-docker exec -it <client-container-id> ping 192.168.60.7
+docker exec -it client-10.9.0.5 ping 192.168.60.7
 
 # Start VPN client and server
-docker exec -it <client-container-id> /volumes/client/client.py &
-docker exec -it <server-container-id> /volumes/server/server.py &
+docker exec -it client-10.9.0.5 /volumes/client/client.py &
+docker exec -it server-router /volumes/server/server.py &
 
 # Validate the connectivity between client and internal host
-docker exec -it <client-conatiner-id> ping 192.168.60.7
+docker exec -it client-10.9.0.5  ping 192.168.60.7
 ```
 
 ## Project Milestones
