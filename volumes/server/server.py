@@ -7,6 +7,14 @@ import os
 from scapy.all import *
 from shared.create_tun import createTun
 
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization, hashes
+
+### RSA ###
+# Get server private key
+with open("/keys/server_private.pem", "rb") as key_file:
+    private_key = serialization.load_pem_private_key(key_file.read(), password=None)
+
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
 IFF_TAP   = 0x0002
@@ -36,9 +44,18 @@ while True:
     for fd in ready:
         if fd is sock:
             data, (ip, port) = sock.recvfrom(2048)
-            pkt = IP(data)
+            ### RSA ###
+            decrypted_data = private_key.decrypt(
+                data,
+                padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None
+                )
+            )
+            pkt = IP(decrypted_data)
             print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
-            os.write(tun, data)
+            os.write(tun, decrypted_data)
 
         if fd is tun:
             packet = os.read(tun, 2048)

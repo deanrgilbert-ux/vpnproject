@@ -8,7 +8,7 @@ Create a tunnel interface (requires superuser permissions):
 Run
 ```shell
 docker-compose build
-docker-compose up
+docker-compose up -d
 
 # Validate no connectivity between client and internal host
 docker exec -it client-10.9.0.5 ping 192.168.60.7
