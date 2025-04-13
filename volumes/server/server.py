@@ -5,6 +5,7 @@ import struct
 import os
 
 from scapy.all import *
+from shared.create_tun import createTun
 
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
@@ -14,13 +15,7 @@ TUN_IP = "192.168.53.98"
 ip = "8.8.8.8"
 
 # Create the tun interface
-tun = os.open("/dev/net/tun", os.O_RDWR)
-ifr = struct.pack('16sH', b'tun%d', IFF_TUN | IFF_NO_PI)
-ifname_bytes = fcntl.ioctl(tun, TUNSETIFF, ifr)
-
-# Get the interface name
-ifname = ifname_bytes.decode('UTF-8')[:16].strip("\x00")
-print("Interface Name: {}".format(ifname))
+ifname, tun = createTun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
 
 # Set up the tun interface
 os.system("ip addr add {}/24 dev {}".format(TUN_IP, ifname))
