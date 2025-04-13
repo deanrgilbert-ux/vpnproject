@@ -1,5 +1,8 @@
 services:
     VPN_Client:
+        build:
+          context: .
+          dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
         container_name: client-10.9.0.5
         tty: true
@@ -9,6 +12,8 @@ services:
                 - "/dev/net/tun:/dev/net/tun"
         volumes:
                 - ./volumes:/volumes
+                - ./keys:/keys
+
         networks:
             net-10.9.0.0:
                 ipv4_address: 10.9.0.5
@@ -17,6 +22,9 @@ services:
                  "
 
     Host1:
+        build:
+          context: .
+          dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
         container_name: host-192.168.60.7
         tty: true
@@ -33,6 +41,9 @@ services:
                  "
 
     Router:
+        build:
+          context: .
+          dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
         container_name: server-router
         tty: true
@@ -43,7 +54,8 @@ services:
         sysctls:
                 - net.ipv4.ip_forward=1
         volumes:
-                - ./volumes:/volumes
+          - ./volumes:/volumes
+          - ./keys:/keys
         networks:
             net-10.9.0.0:
                 ipv4_address: 10.9.0.11
