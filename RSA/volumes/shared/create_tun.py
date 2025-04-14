@@ -4,8 +4,6 @@ import fcntl
 import struct
 import os
 
-from scapy.all import *
-
 def createTun(TUNSETIFF, IFF_TUN, IFF_NO_PI):
     tun = os.open("/dev/net/tun", os.O_RDWR)
     ifr = struct.pack('16sH', b'tun%d', IFF_TUN | IFF_NO_PI)
