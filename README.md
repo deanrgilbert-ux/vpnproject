@@ -5,12 +5,13 @@ Tested with **Python 3.12.6**
 
 Create a tunnel interface (requires superuser permissions):
 
-Run
+Enter the desired directory (e.g. `./RSA`)
 ```shell
 docker-compose build
 docker-compose up -d
 
 # Generate RSA keys for RSA version
+mkdir keys
 openssl genrsa -out keys/server_private.pem 2048
 openssl rsa -in keys/server_private.pem -outform PEM -pubout -out keys/server_public.pem
 
