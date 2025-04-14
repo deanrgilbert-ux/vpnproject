@@ -11,6 +11,7 @@ docker-compose build
 docker-compose up -d
 
 # Generate RSA keys for RSA version
+mkdir keys
 openssl genrsa -out keys/server_private.pem 2048
 openssl rsa -in keys/server_private.pem -outform PEM -pubout -out keys/server_public.pem
 
