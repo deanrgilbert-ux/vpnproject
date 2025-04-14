@@ -10,6 +10,10 @@ Run
 docker-compose build
 docker-compose up -d
 
+# Generate RSA keys for RSA version
+openssl genrsa -out keys/server_private.pem 2048
+openssl rsa -in keys/server_private.pem -outform PEM -pubout -out keys/server_public.pem
+
 # Validate no connectivity between client and internal host
 docker exec -it client-10.9.0.5 ping 192.168.60.7
 
