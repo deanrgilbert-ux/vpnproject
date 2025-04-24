@@ -2,16 +2,8 @@
 
 import os, socket, struct, fcntl, select
 from scapy.all import *
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import padding
 from shared.create_tun import createTun
-
-MAX_RSA_PLAINTEXT = 190 # 190 byte limit for RSA OEAP https://crypto.stackexchange.com/a/42100
-RSA_CIPHERTEXT_LEN = 256
-
-# Load server's public key
-with open("/keys/server_public.pem", "rb") as f:
-    public_key = serialization.load_pem_public_key(f.read())
+from shared.RSA_split_into_blocks.encrypt import split_into_blocks_encrypt
 
 # Create the tun interface
 TUNSETIFF = 0x400454ca
@@ -29,23 +21,6 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Set a default value for ip to avoid error
 ip = "10.0.0.1"
 
-def split_into_blocks_encrypt(packet_bytes):
-    blocks = []
-    for i in range(0, len(packet_bytes), MAX_RSA_PLAINTEXT):
-        chunk = packet_bytes[i:i + MAX_RSA_PLAINTEXT]
-        if len(chunk) < MAX_RSA_PLAINTEXT:
-            chunk += b'\x00' * (MAX_RSA_PLAINTEXT - len(chunk))
-        encrypted = public_key.encrypt(
-            chunk,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
-        )
-        blocks.append(encrypted)
-    return b''.join(blocks)
-
 while True:
     # this will block until at least one interface is ready
     ready, _, _ = select.select([sock, tun], [], [])
@@ -60,5 +35,5 @@ while True:
             packet = os.read(tun, 2048)
             pkt = IP(packet)
             print("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
-            encrypted_data = split_into_blocks_encrypt(packet)
+            encrypted_data = split_into_blocks_encrypt(packet) # RSA
             sock.sendto(encrypted_data, ("10.9.0.11", 9090))

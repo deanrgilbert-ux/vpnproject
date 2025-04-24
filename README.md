@@ -1,10 +1,7 @@
 # VPN Project
 VPN implementation in Python for Linux (and potentially other Unix-like operating systems).
 
-Tested with **Python 3.12.6**
-
-Create a tunnel interface (requires superuser permissions):
-
+### Running the VPN
 Enter the desired directory (e.g. `./RSA`)
 ```shell
 docker-compose build
