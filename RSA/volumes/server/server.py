@@ -3,16 +3,7 @@
 import fcntl, struct, os
 from scapy.all import *
 from shared.create_tun import createTun
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives import serialization, hashes
-
-### RSA ###
-# Get server private key
-with open("/keys/server_private.pem", "rb") as key_file:
-    private_key = serialization.load_pem_private_key(key_file.read(), password=None)
-
-MAX_RSA_PLAINTEXT = 190 # 190 byte limit for RSA OEAP https://crypto.stackexchange.com/a/42100
-RSA_CIPHERTEXT_LEN = 256
+from shared.RSA_split_into_blocks.decrypt import split_into_blocks_decrypt
 
 # Create the tun interface
 TUNSETIFF = 0x400454ca
@@ -38,31 +29,13 @@ sock.bind((IP_A, PORT))
 # Set default ip to avoid error
 ip = "10.0.0.1"
 
-def split_into_blocks_decrypt(data):
-    decrypted = b''
-    for i in range(0, len(data), RSA_CIPHERTEXT_LEN):
-        chunk = data[i:i + RSA_CIPHERTEXT_LEN]
-        if len(chunk) < RSA_CIPHERTEXT_LEN:
-            continue  # skip incomplete block
-        decrypted_block = private_key.decrypt(
-            chunk,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
-        )
-        decrypted += decrypted_block
-    return decrypted.rstrip(b'\x00')
-
 while True:
     # this will block until at least one interface is ready
     ready, _, _ = select.select([sock, tun], [], [])
     for fd in ready:
         if fd is sock:
             data, (ip, port) = sock.recvfrom(2048)
-            ### RSA ###
-            decrypted_data = split_into_blocks_decrypt(data)
+            decrypted_data = split_into_blocks_decrypt(data) # RSA
             pkt = IP(decrypted_data)
             print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
             os.write(tun, decrypted_data)
