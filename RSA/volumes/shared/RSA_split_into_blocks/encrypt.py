@@ -4,11 +4,12 @@ from cryptography.hazmat.primitives import serialization, hashes
 MAX_RSA_PLAINTEXT = 190 # 190 byte limit for RSA OEAP https://crypto.stackexchange.com/a/42100
 RSA_CIPHERTEXT_LEN = 256
 
-# Load server's public key
-with open("/keys/server_public.pem", "rb") as f:
-    public_key = serialization.load_pem_public_key(f.read())
+# Load specified public key
+def load_public_key(filename):
+    with open(filename, "rb") as key_file:
+        return serialization.load_pem_public_key(key_file.read())
 
-def split_into_blocks_encrypt(packet_bytes):
+def split_into_blocks_encrypt(packet_bytes, public_key):
     blocks = []
     for i in range(0, len(packet_bytes), MAX_RSA_PLAINTEXT):
         chunk = packet_bytes[i:i + MAX_RSA_PLAINTEXT]

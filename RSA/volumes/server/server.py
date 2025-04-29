@@ -3,7 +3,8 @@
 import fcntl, struct, os
 from scapy.all import *
 from shared.create_tun import createTun
-from shared.RSA_split_into_blocks.decrypt import split_into_blocks_decrypt
+from shared.RSA_split_into_blocks.encrypt import split_into_blocks_encrypt, load_public_key
+from shared.RSA_split_into_blocks.decrypt import split_into_blocks_decrypt, load_private_key
 
 # Create the tun interface
 TUNSETIFF = 0x400454ca
@@ -29,13 +30,17 @@ sock.bind((IP_A, PORT))
 # Set default ip to avoid error
 ip = "10.0.0.1"
 
+# Get RSA keys
+server_private_key = load_private_key("/keys/server_private.pem")
+client_public_key = load_public_key("/keys/client_public.pem")
+
 while True:
     # this will block until at least one interface is ready
     ready, _, _ = select.select([sock, tun], [], [])
     for fd in ready:
         if fd is sock:
             data, (ip, port) = sock.recvfrom(2048)
-            decrypted_data = split_into_blocks_decrypt(data) # RSA
+            decrypted_data = split_into_blocks_decrypt(data, server_private_key) # RSA
             pkt = IP(decrypted_data)
             print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
             os.write(tun, decrypted_data)
@@ -44,4 +49,5 @@ while True:
             packet = os.read(tun, 2048)
             pkt = IP(packet)
             print("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
+            encrypted_data = split_into_blocks_encrypt(packet, client_public_key)
             sock.sendto(packet, (ip, port))
