@@ -33,12 +33,9 @@ while True:
         if fd is sock:
             data, (ip, port) = sock.recvfrom(2048)
             decrypted_data = split_into_blocks_decrypt(data, client_private_key)
-            try:
-                pkt = IP(decrypted_data)
-                print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
-                os.write(tun, decrypted_data)
-            except Exception as e:
-                print("Decryption failed, invalid packet: {}".format(e))
+            pkt = IP(decrypted_data)
+            print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
+            os.write(tun, decrypted_data)
 
         if fd is tun:
             packet = os.read(tun, 2048)

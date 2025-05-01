@@ -50,4 +50,4 @@ while True:
             pkt = IP(packet)
             print("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
             encrypted_data = split_into_blocks_encrypt(packet, client_public_key)
-            sock.sendto(packet, (ip, port))
+            sock.sendto(encrypted_data, (ip, port))
