@@ -11,6 +11,8 @@ docker-compose up -d
 mkdir keys
 openssl genrsa -out keys/server_private.pem 2048
 openssl rsa -in keys/server_private.pem -outform PEM -pubout -out keys/server_public.pem
+openssl genrsa -out keys/client_private.pem 2048
+openssl rsa -in keys/client_private.pem -outform PEM -pubout -out keys/client_public.pem
 
 # For the QUIC implementation, prefix container names with "QUIC-"
 

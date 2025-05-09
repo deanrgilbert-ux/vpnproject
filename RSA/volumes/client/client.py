@@ -3,7 +3,8 @@
 import os, socket, struct, fcntl, select
 from scapy.all import *
 from shared.create_tun import createTun
-from shared.RSA_split_into_blocks.encrypt import split_into_blocks_encrypt
+from shared.RSA_split_into_blocks.encrypt import split_into_blocks_encrypt, load_public_key
+from shared.RSA_split_into_blocks.decrypt import split_into_blocks_decrypt, load_private_key
 
 # Create the tun interface
 TUNSETIFF = 0x400454ca
@@ -21,19 +22,24 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Set a default value for ip to avoid error
 ip = "10.0.0.1"
 
+# Get RSA keys
+server_public_key = load_public_key("/keys/server_public.pem")
+client_private_key = load_private_key("/keys/client_private.pem")
+
 while True:
     # this will block until at least one interface is ready
     ready, _, _ = select.select([sock, tun], [], [])
     for fd in ready:
         if fd is sock:
             data, (ip, port) = sock.recvfrom(2048)
-            pkt = IP(data)
+            decrypted_data = split_into_blocks_decrypt(data, client_private_key)
+            pkt = IP(decrypted_data)
             print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
-            os.write(tun, data)
+            os.write(tun, decrypted_data)
 
         if fd is tun:
             packet = os.read(tun, 2048)
             pkt = IP(packet)
             print("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
-            encrypted_data = split_into_blocks_encrypt(packet) # RSA
+            encrypted_data = split_into_blocks_encrypt(packet, server_public_key) # RSA
             sock.sendto(encrypted_data, ("10.9.0.11", 9090))
