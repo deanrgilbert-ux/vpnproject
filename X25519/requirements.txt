@@ -1,0 +1,2 @@
+scapy~=2.6.1
+cryptography~=44.0.2
