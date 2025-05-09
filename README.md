@@ -2,7 +2,7 @@
 VPN implementation in Python for Linux (and potentially other Unix-like operating systems).
 
 ### Running the VPN
-Enter the desired directory (e.g. `./RSA`)
+Enter the desired directory (i.e. `./RSA`, `./QUIC` or `./X25519`).
 ```shell
 docker-compose build
 docker-compose up -d
@@ -14,7 +14,14 @@ openssl rsa -in keys/server_private.pem -outform PEM -pubout -out keys/server_pu
 openssl genrsa -out keys/client_private.pem 2048
 openssl rsa -in keys/client_private.pem -outform PEM -pubout -out keys/client_public.pem
 
+# For X25519
+openssl genpkey -algorithm X25519 -out keys/x-server_private.pem
+openssl pkey -in keys/x-server_private.pem -pubout -out keys/x-server_public.pem
+openssl genpkey -algorithm X25519 -out keys/x-client_private.pem
+openssl pkey -in keys/x-client_private.pem -pubout -out keys/x-client_public.pem
+
 # For the QUIC implementation, prefix container names with "QUIC-"
+# For the X25519 implementation, prefix container names with "x-"
 
 # Validate no connectivity between client and internal host
 docker exec -it client-10.9.0.5 ping 192.168.60.7
