@@ -2,7 +2,7 @@
 
 import os, socket, struct, fcntl, select
 from scapy.all import *
-from shared.create_tun import createTun
+from shared.create_tun import create_tun
 from shared.crypto.encrypt import encrypt
 from shared.crypto.decrypt import decrypt
 from shared.crypto.tools import load_public_key
@@ -13,7 +13,7 @@ TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
 IFF_TAP   = 0x0002
 IFF_NO_PI = 0x1000
-ifname, tun = createTun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
+ifname, tun = create_tun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
 
 os.system("ip addr add 192.168.53.99/24 dev {}".format(ifname))
 os.system("ip link set dev {} up".format(ifname))

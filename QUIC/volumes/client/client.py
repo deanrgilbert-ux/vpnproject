@@ -7,7 +7,7 @@ import fcntl
 from scapy.all import *
 from aioquic.asyncio import connect
 from aioquic.quic.configuration import QuicConfiguration
-from shared.create_tun import createTun
+from shared.create_tun import create_tun
 
 # TUN setup
 TUNSETIFF = 0x400454ca
@@ -15,7 +15,7 @@ IFF_TUN   = 0x0001
 IFF_TAP   = 0x0002
 IFF_NO_PI = 0x1000
 
-ifname, tun = createTun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
+ifname, tun = create_tun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
 os.system(f"ip addr add 192.168.53.99/24 dev {ifname}")
 os.system(f"ip link set dev {ifname} up")
 os.system(f"ip route add 192.168.60.0/24 dev {ifname}")
