@@ -4,7 +4,7 @@ import fcntl
 import struct
 import os
 
-def createTun(TUNSETIFF, IFF_TUN, IFF_NO_PI):
+def create_tun(TUNSETIFF, IFF_TUN, IFF_NO_PI):
     tun = os.open("/dev/net/tun", os.O_RDWR)
     ifr = struct.pack('16sH', b'tun%d', IFF_TUN | IFF_NO_PI)
     ifname_bytes = fcntl.ioctl(tun, TUNSETIFF, ifr)

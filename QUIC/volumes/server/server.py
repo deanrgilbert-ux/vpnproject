@@ -7,7 +7,7 @@ import fcntl
 from scapy.all import *
 from aioquic.asyncio import serve
 from aioquic.quic.configuration import QuicConfiguration
-from shared.create_tun import createTun
+from shared.create_tun import create_tun
 from generate_cert import generate_self_signed_cert
 
 # TUN setup
@@ -20,7 +20,7 @@ SERVER_IP = "10.9.0.11"
 QUIC_PORT = 4433
 
 
-ifname, tun = createTun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
+ifname, tun = create_tun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
 os.system(f"ip addr add {TUN_IP}/24 dev {ifname}")
 os.system(f"ip link set dev {ifname} up")
 

@@ -2,7 +2,7 @@
 
 import fcntl, struct, os
 from scapy.all import *
-from shared.create_tun import createTun
+from shared.create_tun import create_tun
 from shared.crypto.encrypt import encrypt
 from shared.crypto.decrypt import decrypt
 from shared.crypto.tools import load_public_key
@@ -17,7 +17,7 @@ TUN_IP = "192.168.53.98"
 ip = "8.8.8.8"
 
 # Create the tun interface
-ifname, tun = createTun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
+ifname, tun = create_tun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
 
 # Set up the tun interface
 os.system("ip addr add {}/24 dev {}".format(TUN_IP, ifname))
