@@ -15,6 +15,7 @@ openssl genrsa -out keys/client_private.pem 2048
 openssl rsa -in keys/client_private.pem -outform PEM -pubout -out keys/client_public.pem
 
 # For X25519
+mkdir keys
 openssl genpkey -algorithm X25519 -out keys/x-server_private.pem
 openssl pkey -in keys/x-server_private.pem -pubout -out keys/x-server_public.pem
 openssl genpkey -algorithm X25519 -out keys/x-client_private.pem
@@ -34,6 +35,13 @@ docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/serve
 
 # Validate the connectivity between client and internal host
 docker exec -it RSA-client-10.9.0.5  ping 192.168.60.7
+
+# To run benchmarking
+docker-compose build
+docker-compose up -d
+docker exec -it RSA-client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py &
+docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py &
+python3 benchmark/run_tests.py
 ```
 
 ## Project Milestones
@@ -42,7 +50,7 @@ docker exec -it RSA-client-10.9.0.5  ping 192.168.60.7
 - [x] Basic UDP client–server communication established; packets can be sent both ways  
 - [x] Basic encryption/decryption method implemented for securing network traffic  
 - [ ] Authentication configured  
-- [ ] Performance testing conducted with iperf  
+- [x] Performance testing conducted with iperf  
 - [ ] Functional prototype deployed  
 - [ ] User guides developed  
 - [ ] Technical documentation developed  
