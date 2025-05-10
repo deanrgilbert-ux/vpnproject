@@ -4,7 +4,7 @@ services:
           context: .
           dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
-        container_name: x-client-10.9.0.5
+        container_name: X25519-client-10.9.0.5
         tty: true
         cap_add:
                 - ALL
@@ -26,7 +26,7 @@ services:
           context: .
           dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
-        container_name: x-host-192.168.60.7
+        container_name: X25519-host-192.168.60.7
         tty: true
         cap_add:
                 - ALL
@@ -45,7 +45,7 @@ services:
           context: .
           dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
-        container_name: x-server-router
+        container_name: X25519-server-router
         tty: true
         cap_add:
                 - ALL

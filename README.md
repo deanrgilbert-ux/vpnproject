@@ -20,18 +20,20 @@ openssl pkey -in keys/x-server_private.pem -pubout -out keys/x-server_public.pem
 openssl genpkey -algorithm X25519 -out keys/x-client_private.pem
 openssl pkey -in keys/x-client_private.pem -pubout -out keys/x-client_public.pem
 
+# All containers are prefixed with their version names
 # For the QUIC implementation, prefix container names with "QUIC-"
-# For the X25519 implementation, prefix container names with "x-"
+# For the RSA implementation, prefix container names with "RSA-"
+# For the X25519 implementation, prefix container names with "X25519-"
 
 # Validate no connectivity between client and internal host
-docker exec -it client-10.9.0.5 ping 192.168.60.7
+docker exec -it RSA-client-10.9.0.5 ping 192.168.60.7
 
 # Start VPN client and server
-docker exec -it client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py &
-docker exec -it server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py &
+docker exec -it RSA-client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py &
+docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py &
 
 # Validate the connectivity between client and internal host
-docker exec -it client-10.9.0.5  ping 192.168.60.7
+docker exec -it RSA-client-10.9.0.5  ping 192.168.60.7
 ```
 
 ## Project Milestones
