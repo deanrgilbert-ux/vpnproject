@@ -4,7 +4,7 @@ services:
           context: .
           dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
-        container_name: client-10.9.0.5
+        container_name: RSA-client-10.9.0.5
         tty: true
         cap_add:
                 - ALL
@@ -26,7 +26,7 @@ services:
           context: .
           dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
-        container_name: host-192.168.60.7
+        container_name: RSA-host-192.168.60.7
         tty: true
         cap_add:
                 - ALL
@@ -45,7 +45,7 @@ services:
           context: .
           dockerfile: Dockerfile
         image: handsonsecurity/seed-ubuntu:large
-        container_name: server-router
+        container_name: RSA-server-router
         tty: true
         cap_add:
                 - ALL

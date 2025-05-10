@@ -9,10 +9,8 @@ from aioquic.asyncio import connect
 from aioquic.quic.configuration import QuicConfiguration
 from shared.create_tun import create_tun
 
-# TUN setup
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
-IFF_TAP   = 0x0002
 IFF_NO_PI = 0x1000
 
 ifname, tun = create_tun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
@@ -22,19 +20,24 @@ os.system(f"ip route add 192.168.60.0/24 dev {ifname}")
 
 async def recv_from_server(reader):
     while True:
-        data = await reader.read(2048)
-        if not data:
-            print("Server closed connection.")
+        try:
+            length_bytes = await reader.readexactly(2)
+            pkt_len = struct.unpack("!H", length_bytes)[0]
+            data = await reader.readexactly(pkt_len)
+
+            pkt = IP(data)
+            print(f"From server <==: {pkt.src} --> {pkt.dst}")
+            os.write(tun, data)
+        except Exception as e:
+            print(f"[recv_from_server] Exception: {e}")
             os._exit(1)
-        pkt = IP(data)
-        print(f"From server <==: {pkt.src} --> {pkt.dst}")
-        os.write(tun, data)
 
 def tun_read_cb(writer):
     packet = os.read(tun, 2048)
     pkt = IP(packet)
     print(f"From tun ==>: {pkt.src} --> {pkt.dst}")
-    writer.write(packet)
+    length_prefix = struct.pack("!H", len(packet))
+    writer.write(length_prefix + packet)
 
 async def vpn_client():
     configuration = QuicConfiguration(
@@ -43,10 +46,7 @@ async def vpn_client():
     )
 
     async with connect("10.9.0.11", 4433, configuration=configuration) as connection:
-        # quic = connection._quic
-        # stream_id = quic.get_next_available_stream_id()
         reader, writer = await connection.create_stream()
-
         loop = asyncio.get_running_loop()
         loop.add_reader(tun, tun_read_cb, writer)
 

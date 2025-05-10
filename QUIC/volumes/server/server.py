@@ -10,15 +10,12 @@ from aioquic.quic.configuration import QuicConfiguration
 from shared.create_tun import create_tun
 from generate_cert import generate_self_signed_cert
 
-# TUN setup
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
-IFF_TAP   = 0x0002
 IFF_NO_PI = 0x1000
 TUN_IP = "192.168.53.98"
 SERVER_IP = "10.9.0.11"
 QUIC_PORT = 4433
-
 
 ifname, tun = create_tun(TUNSETIFF, IFF_TUN, IFF_NO_PI)
 os.system(f"ip addr add {TUN_IP}/24 dev {ifname}")
@@ -31,19 +28,24 @@ class VPNServerProtocol:
 
     async def recv_from_client(self):
         while True:
-            data = await self.reader.read(2048)
-            if not data:
-                print("Client closed connection.")
+            try:
+                length_bytes = await self.reader.readexactly(2)
+                pkt_len = struct.unpack("!H", length_bytes)[0]
+                data = await self.reader.readexactly(pkt_len)
+
+                pkt = IP(data)
+                print(f"From client <==: {pkt.src} --> {pkt.dst}")
+                os.write(tun, data)
+            except Exception as e:
+                print(f"[recv_from_client] Exception: {e}")
                 os._exit(1)
-            pkt = IP(data)
-            print(f"From client <==: {pkt.src} --> {pkt.dst}")
-            os.write(tun, data)
 
     def tun_read_cb(self):
         packet = os.read(tun, 2048)
         pkt = IP(packet)
         print(f"From tun ==>: {pkt.src} --> {pkt.dst}")
-        self.writer.write(packet)
+        length_prefix = struct.pack("!H", len(packet))
+        self.writer.write(length_prefix + packet)
 
     async def handle(self):
         loop = asyncio.get_running_loop()
