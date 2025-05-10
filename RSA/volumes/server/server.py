@@ -3,8 +3,8 @@
 import fcntl, struct, os
 from scapy.all import *
 from shared.create_tun import createTun
-from shared.RSA_split_into_blocks.encrypt import split_into_blocks_encrypt, load_public_key
-from shared.RSA_split_into_blocks.decrypt import split_into_blocks_decrypt, load_private_key
+from shared.crypto.encrypt import split_into_blocks_encrypt, load_public_key
+from shared.crypto.decrypt import split_into_blocks_decrypt, load_private_key
 
 # Create the tun interface
 TUNSETIFF = 0x400454ca
