@@ -8,6 +8,14 @@ from shared.crypto.decrypt import decrypt
 from shared.crypto.tools import load_public_key
 from shared.crypto.tools import load_private_key
 
+# Logging setup
+logging.basicConfig(
+    filename='/volumes/client.log',
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Create the tun interface
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
@@ -36,12 +44,12 @@ while True:
             data, (ip, port) = sock.recvfrom(2048)
             decrypted_data = decrypt(data, client_private_key, server_public_key)
             pkt = IP(decrypted_data)
-            print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
+            logger.info("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
             os.write(tun, decrypted_data)
 
         if fd is tun:
             packet = os.read(tun, 2048)
             pkt = IP(packet)
-            print("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
+            logger.info("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
             encrypted_data = encrypt(packet, client_private_key, server_public_key)
             sock.sendto(encrypted_data, ("10.9.0.11", 9090))

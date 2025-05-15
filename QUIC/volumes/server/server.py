@@ -10,6 +10,14 @@ from aioquic.quic.configuration import QuicConfiguration
 from shared.create_tun import create_tun
 from generate_cert import generate_self_signed_cert
 
+# Logging setup
+logging.basicConfig(
+    filename='/volumes/server.log',
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
 IFF_NO_PI = 0x1000
@@ -34,16 +42,16 @@ class VPNServerProtocol:
                 data = await self.reader.readexactly(pkt_len)
 
                 pkt = IP(data)
-                print(f"From client <==: {pkt.src} --> {pkt.dst}")
+                logger.info(f"From client <==: {pkt.src} --> {pkt.dst}")
                 os.write(tun, data)
             except Exception as e:
-                print(f"[recv_from_client] Exception: {e}")
+                logger.exception(f"[recv_from_client] Exception: {e}")
                 os._exit(1)
 
     def tun_read_cb(self):
         packet = os.read(tun, 2048)
         pkt = IP(packet)
-        print(f"From tun ==>: {pkt.src} --> {pkt.dst}")
+        logger.info(f"From tun ==>: {pkt.src} --> {pkt.dst}")
         length_prefix = struct.pack("!H", len(packet))
         self.writer.write(length_prefix + packet)
 
@@ -69,7 +77,7 @@ async def vpn_server():
         configuration=configuration,
         stream_handler=stream_handler,
     )
-    print(f"QUIC VPN server established on IP {SERVER_IP} and port {QUIC_PORT}")
+    logger.info(f"QUIC VPN server established on IP {SERVER_IP} and port {QUIC_PORT}")
     await asyncio.Future()
 
 if __name__ == "__main__":

@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-
+import logging
 import os, socket, struct, fcntl, select
 from scapy.all import *
 from shared.create_tun import create_tun
 from shared.crypto.encrypt import split_into_blocks_encrypt, load_public_key
 from shared.crypto.decrypt import split_into_blocks_decrypt, load_private_key
+
+# Logging setup
+logging.basicConfig(
+    filename='/volumes/client.log',
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Create the tun interface
 TUNSETIFF = 0x400454ca
@@ -31,15 +39,21 @@ while True:
     ready, _, _ = select.select([sock, tun], [], [])
     for fd in ready:
         if fd is sock:
-            data, (ip, port) = sock.recvfrom(2048)
-            decrypted_data = split_into_blocks_decrypt(data, client_private_key)
-            pkt = IP(decrypted_data)
-            print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
-            os.write(tun, decrypted_data)
+            try:
+                data, (ip, port) = sock.recvfrom(2048)
+                decrypted_data = split_into_blocks_decrypt(data, client_private_key)
+                pkt = IP(decrypted_data)
+                logger.info("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
+                os.write(tun, decrypted_data)
+            except Exception as e:
+                logging.exception(f"Error decrypting from sock: {e}")
 
         if fd is tun:
-            packet = os.read(tun, 2048)
-            pkt = IP(packet)
-            print("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
-            encrypted_data = split_into_blocks_encrypt(packet, server_public_key) # RSA
-            sock.sendto(encrypted_data, ("10.9.0.11", 9090))
+            try:
+                packet = os.read(tun, 2048)
+                pkt = IP(packet)
+                logger.info("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
+                encrypted_data = split_into_blocks_encrypt(packet, server_public_key) # RSA
+                sock.sendto(encrypted_data, ("10.9.0.11", 9090))
+            except Exception as e:
+                logging.exception(f"Error encrypting from tun: {e}")

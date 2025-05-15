@@ -37,11 +37,19 @@ docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/serve
 docker exec -it RSA-client-10.9.0.5  ping 192.168.60.7
 
 # To run benchmarking
-docker-compose build
-docker-compose up -d
-docker exec -it RSA-client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py &
-docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py &
-python3 benchmark/run_tests.py
+for dir in $(ls -d */ | sed 's/\///g');
+do
+    pushd .
+    cd $dir
+    docker-compose build
+    docker-compose up -d
+    docker exec -itd ${dir}-client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py
+    docker exec -itd ${dir}-server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py
+    python3 benchmark/run_tests.py >> benchmark-output.txt
+    docker-compose kill
+    docker-compose down
+    popd
+done
 ```
 
 ## Project Milestones

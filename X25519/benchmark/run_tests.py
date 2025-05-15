@@ -13,11 +13,11 @@ def run_cmd(cmd, capture_output=False):
     return subprocess.run(cmd, shell=True, text=True, capture_output=capture_output)
 
 def run_ping_test():
-    print("\n📡 Running ping test through VPN...")
+    print("\nRunning ping test through VPN")
     run_cmd(f'docker exec {VPN_CLIENT_CONTAINER} ping -c 5 {VPN_TARGET_IP}')
 
 def run_iperf_test():
-    print("\n📶 Running iperf3 throughput test...")
+    print("\nRunning iperf3 throughput test")
 
     # Start iperf3 server in Host1 container
     run_cmd(f'docker exec {PRIVATE_HOST_CONTAINER} pkill iperf3 || true')
@@ -28,7 +28,7 @@ def run_iperf_test():
     run_cmd(f'docker exec {VPN_CLIENT_CONTAINER} iperf3 -c {VPN_TARGET_IP} -t 10')
 
 def run_concurrent_load():
-    print("\n🔁 Simulating concurrent ping + iperf3 load...")
+    print("\nSimulating concurrent ping + iperf3 load")
 
     # Run long ping in background
     ping_proc = subprocess.Popen(
@@ -43,18 +43,18 @@ def run_concurrent_load():
         ping_proc.terminate()
 
 def check_cpu_memory():
-    print("\n🧠 Checking server CPU and memory usage during idle state:")
+    print("\nChecking server CPU and memory usage during idle state:")
     run_cmd(f'docker exec {VPN_SERVER_CONTAINER} top -b -n1 | head -15')
 
 def main():
-    print("🚀 Starting VPN Benchmark Suite")
+    print("Starting VPN Benchmarking")
 
     check_cpu_memory()
     run_ping_test()
     run_iperf_test()
     run_concurrent_load()
 
-    print("\n✅ Benchmark Complete")
+    print("\nBenchmark Complete")
 
 if __name__ == "__main__":
     main()
