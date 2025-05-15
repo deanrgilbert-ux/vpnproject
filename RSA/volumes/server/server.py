@@ -6,6 +6,14 @@ from shared.create_tun import create_tun
 from shared.crypto.encrypt import split_into_blocks_encrypt, load_public_key
 from shared.crypto.decrypt import split_into_blocks_decrypt, load_private_key
 
+# Logging setup
+logging.basicConfig(
+    filename='/volumes/server.log',  # Adjust path if needed
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Create the tun interface
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
@@ -42,12 +50,12 @@ while True:
             data, (ip, port) = sock.recvfrom(2048)
             decrypted_data = split_into_blocks_decrypt(data, server_private_key) # RSA
             pkt = IP(decrypted_data)
-            print("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
+            logger.info("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
             os.write(tun, decrypted_data)
 
         if fd is tun:
             packet = os.read(tun, 2048)
             pkt = IP(packet)
-            print("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
+            logger.info("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
             encrypted_data = split_into_blocks_encrypt(packet, client_public_key)
             sock.sendto(encrypted_data, (ip, port))
