@@ -47,15 +47,21 @@ while True:
     ready, _, _ = select.select([sock, tun], [], [])
     for fd in ready:
         if fd is sock:
-            data, (ip, port) = sock.recvfrom(2048)
-            decrypted_data = split_into_blocks_decrypt(data, server_private_key) # RSA
-            pkt = IP(decrypted_data)
-            logger.info("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
-            os.write(tun, decrypted_data)
+            try:
+                data, (ip, port) = sock.recvfrom(2048)
+                decrypted_data = split_into_blocks_decrypt(data, server_private_key) # RSA
+                pkt = IP(decrypted_data)
+                logger.info("From socket <==: {} --> {}".format(pkt.src, pkt.dst))
+                os.write(tun, decrypted_data)
+            except Exception as e:
+                logging.exception(f"Error decrypting from sock: {e}")
 
         if fd is tun:
-            packet = os.read(tun, 2048)
-            pkt = IP(packet)
-            logger.info("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
-            encrypted_data = split_into_blocks_encrypt(packet, client_public_key)
-            sock.sendto(encrypted_data, (ip, port))
+            try:
+                packet = os.read(tun, 2048)
+                pkt = IP(packet)
+                logger.info("From tun ==>: {} --> {}".format(pkt.src, pkt.dst))
+                encrypted_data = split_into_blocks_encrypt(packet, client_public_key)
+                sock.sendto(encrypted_data, (ip, port))
+            except Exception as e:
+                logging.exception(f"Error encrypting from tun: {e}")
