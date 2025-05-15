@@ -4,10 +4,19 @@ import asyncio
 import os
 import struct
 import fcntl
+import logging
 from scapy.all import *
 from aioquic.asyncio import connect
 from aioquic.quic.configuration import QuicConfiguration
 from shared.create_tun import create_tun
+
+# Logging setup
+logging.basicConfig(
+    filename='/volumes/client.log',  # Adjust path if needed
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
@@ -26,16 +35,16 @@ async def recv_from_server(reader):
             data = await reader.readexactly(pkt_len)
 
             pkt = IP(data)
-            print(f"From server <==: {pkt.src} --> {pkt.dst}")
+            logger.info(f"From server <==: {pkt.src} --> {pkt.dst}")
             os.write(tun, data)
         except Exception as e:
-            print(f"[recv_from_server] Exception: {e}")
+            logger.exception(f"[recv_from_server] Exception")
             os._exit(1)
 
 def tun_read_cb(writer):
     packet = os.read(tun, 2048)
     pkt = IP(packet)
-    print(f"From tun ==>: {pkt.src} --> {pkt.dst}")
+    logger.info(f"From tun ==>: {pkt.src} --> {pkt.dst}")
     length_prefix = struct.pack("!H", len(packet))
     writer.write(length_prefix + packet)
 
@@ -50,7 +59,7 @@ async def vpn_client():
         loop = asyncio.get_running_loop()
         loop.add_reader(tun, tun_read_cb, writer)
 
-        await recv_from_server(reader)  # Keep reading server
+        await recv_from_server(reader)
 
 if __name__ == "__main__":
     asyncio.run(vpn_client())
