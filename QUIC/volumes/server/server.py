@@ -12,7 +12,7 @@ from generate_cert import generate_self_signed_cert
 
 # Logging setup
 logging.basicConfig(
-    filename='/volumes/server.log',  # Adjust path if needed
+    filename='/volumes/server.log',
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )

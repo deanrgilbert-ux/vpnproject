@@ -12,7 +12,7 @@ from shared.create_tun import create_tun
 
 # Logging setup
 logging.basicConfig(
-    filename='/volumes/client.log',  # Adjust path if needed
+    filename='/volumes/client.log',
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
