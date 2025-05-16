@@ -84,9 +84,9 @@ foreach ($dir in $dirs) {
 ## Functional Requirements
 - [x] Working prototype developed to align with the client–server model (Jing et al., 1999, p. 30)
 - [x] Encryption implemented using asymmetric algorithms like ECDH, ECDSA, and RSA or the newly developed post–quantum ML–DSA, ML-KEM (Australian Cyber Security Centre, 2025, p. 178) or FIPS–203 standard (NIST, 2024) 
-- [ ] User authentication  
+- [x] User authentication  
 - [x] UDP tunnelling 
-- [ ] Verbose logging and debugging features
+- [x] Verbose logging and debugging features
 - [x] Virtual interface implemented to facilitate network communication
 
 ## Non–Functional Requirements
