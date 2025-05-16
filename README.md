@@ -56,17 +56,17 @@ done
 # To run benchmarking (PowerShell)
 $dirs = gci -Directory
 foreach ($dir in $dirs) {
-	pushd
-	cd $dir.FullName
-	docker-compose build
-	docker-compose up -d
-	$dirName=$dir.Name
-	docker exec -itd "${dirName}-client-10.9.0.5" env PYTHONPATH=/volumes python3 /volumes/client/client.py
-	docker exec -itd "${dirName}-server-router" env PYTHONPATH=/volumes python3 /volumes/server/server.py
-	python3 benchmark/run_tests.py | Out-File -Append ./benchmark-output.txt
-	docker-compose kill
-	docker-compose down
-	popd
+    pushd
+    cd $dir.FullName
+    docker-compose build
+    docker-compose up -d
+    $dirName=$dir.Name
+    docker exec -itd "${dirName}-client-10.9.0.5" env PYTHONPATH=/volumes python3 /volumes/client/client.py
+    docker exec -itd "${dirName}-server-router" env PYTHONPATH=/volumes python3 /volumes/server/server.py
+    python3 benchmark/run_tests.py | Out-File -Append ./benchmark-output.txt
+    docker-compose kill
+    docker-compose down
+    popd
 }
 ```
 
