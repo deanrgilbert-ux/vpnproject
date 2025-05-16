@@ -35,8 +35,9 @@ docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/serve
 
 # Validate the connectivity between client and internal host
 docker exec -it RSA-client-10.9.0.5  ping 192.168.60.7
-
-# To run benchmarking
+```
+```shell
+# To run benchmarking (bash terminals or similar)
 for dir in $(ls -d */ | sed 's/\///g');
 do
     pushd .
@@ -51,6 +52,23 @@ do
     popd
 done
 ```
+```PowerShell
+# To run benchmarking (PowerShell)
+$dirs = gci -Directory
+foreach ($dir in $dirs) {
+	pushd
+	cd $dir.FullName
+	docker-compose build
+	docker-compose up -d
+	$dirName=$dir.Name
+	docker exec -itd "${dirName}-client-10.9.0.5" env PYTHONPATH=/volumes python3 /volumes/client/client.py
+	docker exec -itd "${dirName}-server-router" env PYTHONPATH=/volumes python3 /volumes/server/server.py
+	python3 benchmark/run_tests.py | Out-File -Append ./benchmark-output.txt
+	docker-compose kill
+	docker-compose down
+	popd
+}
+```
 
 ## Project Milestones
 - [x] Virtual interface created and data encapsulated inside the VPN's UDP packets  
@@ -59,8 +77,8 @@ done
 - [x] Basic encryption/decryption method implemented for securing network traffic  
 - [x] Authentication  
 - [x] Performance testing conducted with iperf  
-- [ ] Functional prototype deployed  
-- [ ] User guides developed  
+- [x] Functional prototype deployed  
+- [x] User guides developed  
 - [ ] Technical documentation developed  
 
 ## Functional Requirements
