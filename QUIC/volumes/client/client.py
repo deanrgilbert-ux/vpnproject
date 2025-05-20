@@ -9,6 +9,7 @@ from scapy.all import *
 from aioquic.asyncio import connect
 from aioquic.quic.configuration import QuicConfiguration
 from shared.create_tun import create_tun
+import argparse
 
 # Logging setup
 logging.basicConfig(
@@ -17,6 +18,11 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--host', default='10.9.0.11')
+parser.add_argument('--port', type=int, default=4433)
+args = parser.parse_args()
 
 TUNSETIFF = 0x400454ca
 IFF_TUN   = 0x0001
