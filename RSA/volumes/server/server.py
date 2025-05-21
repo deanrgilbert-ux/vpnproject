@@ -8,7 +8,7 @@ from shared.crypto.decrypt import split_into_blocks_decrypt, load_private_key
 
 # Logging setup
 logging.basicConfig(
-    filename='/volumes/server.log',  # Adjust path if needed
+    filename='/volumes/server.log',
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
