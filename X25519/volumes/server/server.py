@@ -40,7 +40,7 @@ sock.bind((IP_A, PORT))
 # Set default ip to avoid error
 ip = "10.0.0.1"
 
-# Get RSA keys
+# Get X25519 keys
 server_private_key = load_private_key("/keys/x-server_private.pem")
 client_public_key = load_public_key("/keys/x-client_public.pem")
 
