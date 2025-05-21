@@ -70,6 +70,38 @@ foreach ($dir in $dirs) {
 }
 ```
 
+### Creating a local Wireguard connection for comparison testing
+Assumptions:
+- Devices are on same local network
+- IP addresses are 192.168.55.50 and 192.168.55.51
+
+
+```toml
+# Device 1
+[Interface]
+PrivateKey = # Put a key here
+ListenPort = 51820
+Address = 10.0.0.1/24
+
+[Peer]
+PublicKey = # Put a key here
+AllowedIPs = 10.0.0.2/32
+Endpoint = 192.168.55.51:51820
+PersistentKeepalive = 25
+
+# Device 2
+[Interface]
+PrivateKey = # Put a key here
+ListenPort = 51820
+Address = 10.0.0.2/24
+
+[Peer]
+PublicKey = # Put a key here
+AllowedIPs = 10.0.0.1/32
+Endpoint = 192.168.55.50:51820
+PersistentKeepalive = 25
+```
+
 ## Project Milestones
 - [x] Virtual interface created and data encapsulated inside the VPN's UDP packets  
 - [x] UDP packet sent by VPN from one device to another  
