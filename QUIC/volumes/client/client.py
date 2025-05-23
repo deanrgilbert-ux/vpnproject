@@ -13,7 +13,7 @@ import argparse
 
 # Logging setup
 logging.basicConfig(
-    filename='/volumes/client.log',  # Adjust path if needed
+    filename='/volumes/client.log',
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )

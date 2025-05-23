@@ -1,6 +1,14 @@
 # VPN Project
 VPN implementation in Python for Linux (and potentially other Unix-like operating systems).
 
+Please see the [user documentation PDF](user_documentation.pdf) for a more detailed overview on the VPN and benchmarking.
+
+### Architecture overview
+This VPN is deployed in preconfigured Docker containers running Linux across two private networks (Class A and Class C), there is no router or any fancy networking between the two networks. See the diagrams below to understand this structure.
+![Diagram of VPN system architecture with VPN on](images/active.png)
+
+![Diagram of VPN system architecture with VPN client off](images/inactive.png)
+
 ### Running the VPN
 Enter the desired directory (i.e. `./RSA`, `./QUIC` or `./X25519`).
 ```shell
@@ -35,8 +43,9 @@ docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/serve
 
 # Validate the connectivity between client and internal host
 docker exec -it RSA-client-10.9.0.5  ping 192.168.60.7
-
-# To run benchmarking
+```
+```shell
+# To run benchmarking (bash terminals or similar)
 for dir in $(ls -d */ | sed 's/\///g');
 do
     pushd .
@@ -51,24 +60,73 @@ do
     popd
 done
 ```
+```PowerShell
+# To run benchmarking (PowerShell)
+$dirs = gci -Directory
+foreach ($dir in $dirs) {
+    pushd
+    cd $dir.FullName
+    docker-compose build
+    docker-compose up -d
+    $dirName=$dir.Name
+    docker exec -itd "${dirName}-client-10.9.0.5" env PYTHONPATH=/volumes python3 /volumes/client/client.py
+    docker exec -itd "${dirName}-server-router" env PYTHONPATH=/volumes python3 /volumes/server/server.py
+    python3 benchmark/run_tests.py | Out-File -Append ./benchmark-output.txt
+    docker-compose kill
+    docker-compose down
+    popd
+}
+```
+
+### Creating a local Wireguard connection for comparison testing
+Assumptions:
+- Devices are on same local network
+- IP addresses are 192.168.55.50 and 192.168.55.51
+
+
+```ini
+# Device 1
+[Interface]
+PrivateKey = # Put a key here
+ListenPort = 51820
+Address = 10.0.0.1/24
+
+[Peer]
+PublicKey = # Put a key here
+AllowedIPs = 10.0.0.2/32
+Endpoint = 192.168.55.51:51820
+PersistentKeepalive = 25
+
+# Device 2
+[Interface]
+PrivateKey = # Put a key here
+ListenPort = 51820
+Address = 10.0.0.2/24
+
+[Peer]
+PublicKey = # Put a key here
+AllowedIPs = 10.0.0.1/32
+Endpoint = 192.168.55.50:51820
+PersistentKeepalive = 25
+```
 
 ## Project Milestones
 - [x] Virtual interface created and data encapsulated inside the VPN's UDP packets  
 - [x] UDP packet sent by VPN from one device to another  
 - [x] Basic UDP client–server communication established; packets can be sent both ways  
 - [x] Basic encryption/decryption method implemented for securing network traffic  
-- [ ] Authentication configured  
+- [x] Authentication  
 - [x] Performance testing conducted with iperf  
-- [ ] Functional prototype deployed  
-- [ ] User guides developed  
+- [x] Functional prototype deployed  
+- [x] User guides developed  
 - [ ] Technical documentation developed  
 
 ## Functional Requirements
 - [x] Working prototype developed to align with the client–server model (Jing et al., 1999, p. 30)
 - [x] Encryption implemented using asymmetric algorithms like ECDH, ECDSA, and RSA or the newly developed post–quantum ML–DSA, ML-KEM (Australian Cyber Security Centre, 2025, p. 178) or FIPS–203 standard (NIST, 2024) 
-- [ ] User authentication  
+- [x] User authentication  
 - [x] UDP tunnelling 
-- [ ] Verbose logging and debugging features
+- [x] Verbose logging and debugging features
 - [x] Virtual interface implemented to facilitate network communication
 
 ## Non–Functional Requirements

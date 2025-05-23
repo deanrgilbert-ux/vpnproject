@@ -10,7 +10,7 @@ from shared.crypto.tools import load_private_key
 
 # Logging setup
 logging.basicConfig(
-    filename='/volumes/server.log',  # Adjust path if needed
+    filename='/volumes/server.log',
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
@@ -40,7 +40,7 @@ sock.bind((IP_A, PORT))
 # Set default ip to avoid error
 ip = "10.0.0.1"
 
-# Get RSA keys
+# Get X25519 keys
 server_private_key = load_private_key("/keys/x-server_private.pem")
 client_public_key = load_public_key("/keys/x-client_public.pem")
 
