@@ -1,6 +1,14 @@
 # VPN Project
 VPN implementation in Python for Linux (and potentially other Unix-like operating systems).
 
+Please see the [user documentation PDF](user_documentation.pdf) for a more detailed overview on the VPN and benchmarking.
+
+### Architecture overview
+This VPN is deployed in preconfigured Docker containers running Linux across two private networks (Class A and Class C), there is no router or any fancy networking between the two networks. See the diagrams below to understand this structure.
+![Diagram of VPN system architecture with VPN on](images/active.png)
+
+![Diagram of VPN system architecture with VPN client off](images/inactive.png)
+
 ### Running the VPN
 Enter the desired directory (i.e. `./RSA`, `./QUIC` or `./X25519`).
 ```shell
