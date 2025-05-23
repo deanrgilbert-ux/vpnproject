@@ -76,7 +76,7 @@ Assumptions:
 - IP addresses are 192.168.55.50 and 192.168.55.51
 
 
-```toml
+```ini
 # Device 1
 [Interface]
 PrivateKey = # Put a key here

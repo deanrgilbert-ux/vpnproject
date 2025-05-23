@@ -32,7 +32,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Set a default value for ip to avoid error
 ip = "10.0.0.1"
 
-# Get RSA keys
+# Get X25519 keys
 server_public_key = load_public_key("/keys/x-server_public.pem")
 client_private_key = load_private_key("/keys/x-client_private.pem")
 
