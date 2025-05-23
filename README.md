@@ -1,6 +1,8 @@
 # VPN Project
 VPN implementation in Python for Linux (and potentially other Unix-like operating systems).
 
+Please see the [user documentation PDF](user_documentation.pdf) for a more detailed overview on the VPN and benchmarking.
+
 ### Running the VPN
 Enter the desired directory (i.e. `./RSA`, `./QUIC` or `./X25519`).
 ```shell
