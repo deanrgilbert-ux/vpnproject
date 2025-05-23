@@ -1,6 +1,14 @@
 # VPN Project
 VPN implementation in Python for Linux (and potentially other Unix-like operating systems).
 
+Please see the [user documentation PDF](user_documentation.pdf) for a more detailed overview on the VPN and benchmarking.
+
+### Architecture overview
+This VPN is deployed in preconfigured Docker containers running Linux across two private networks (Class A and Class C), there is no router or any fancy networking between the two networks. See the diagrams below to understand this structure.
+![Diagram of VPN system architecture with VPN on](images/active.png)
+
+![Diagram of VPN system architecture with VPN client off](images/inactive.png)
+
 ### Running the VPN
 Enter the desired directory (i.e. `./RSA`, `./QUIC` or `./X25519`).
 ```shell
@@ -68,6 +76,38 @@ foreach ($dir in $dirs) {
     docker-compose down
     popd
 }
+```
+
+### Creating a local Wireguard connection for comparison testing
+Assumptions:
+- Devices are on same local network
+- IP addresses are 192.168.55.50 and 192.168.55.51
+
+
+```ini
+# Device 1
+[Interface]
+PrivateKey = # Put a key here
+ListenPort = 51820
+Address = 10.0.0.1/24
+
+[Peer]
+PublicKey = # Put a key here
+AllowedIPs = 10.0.0.2/32
+Endpoint = 192.168.55.51:51820
+PersistentKeepalive = 25
+
+# Device 2
+[Interface]
+PrivateKey = # Put a key here
+ListenPort = 51820
+Address = 10.0.0.2/24
+
+[Peer]
+PublicKey = # Put a key here
+AllowedIPs = 10.0.0.1/32
+Endpoint = 192.168.55.50:51820
+PersistentKeepalive = 25
 ```
 
 ## Project Milestones
