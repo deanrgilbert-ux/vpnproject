@@ -55,7 +55,7 @@ services:
         volumes:
                 - ./volumes:/volumes
         ports:
-                - "4433:4433/udp"  # Expose QUIC server to host network
+                - "4433:4433/udp"
         networks:
             net-10.9.0.0:
                 ipv4_address: 10.9.0.11
