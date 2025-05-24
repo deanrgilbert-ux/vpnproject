@@ -69,6 +69,8 @@ async def vpn_server():
     generate_self_signed_cert()
     configuration = QuicConfiguration(
         is_client=False,
+        max_stream_data = 65536,
+        max_data=524288
     )
     configuration.load_cert_chain(certfile="cert.pem", keyfile="key.pem")
     server = await serve(
