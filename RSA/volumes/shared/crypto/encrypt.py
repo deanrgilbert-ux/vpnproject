@@ -11,10 +11,14 @@ def load_public_key(filename):
 
 def split_into_blocks_encrypt(packet_bytes, public_key):
     blocks = []
+
     for i in range(0, len(packet_bytes), MAX_RSA_PLAINTEXT):
         chunk = packet_bytes[i:i + MAX_RSA_PLAINTEXT]
+
         if len(chunk) < MAX_RSA_PLAINTEXT:
+            # If the length of the chunk isn't correct, pad it with zeros
             chunk += b'\x00' * (MAX_RSA_PLAINTEXT - len(chunk))
+        
         encrypted = public_key.encrypt(
             chunk,
             padding.OAEP(
@@ -23,5 +27,7 @@ def split_into_blocks_encrypt(packet_bytes, public_key):
                 label=None
             )
         )
+
         blocks.append(encrypted)
+
     return b''.join(blocks)

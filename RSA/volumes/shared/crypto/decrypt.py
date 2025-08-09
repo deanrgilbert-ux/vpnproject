@@ -11,10 +11,13 @@ def load_private_key(filename):
 
 def split_into_blocks_decrypt(data, private_key):
     decrypted = b''
+
     for i in range(0, len(data), RSA_CIPHERTEXT_LEN):
         chunk = data[i:i + RSA_CIPHERTEXT_LEN]
+
         if len(chunk) < RSA_CIPHERTEXT_LEN:
             continue  # skip incomplete block
+
         decrypted_block = private_key.decrypt(
             chunk,
             padding.OAEP(
@@ -23,5 +26,7 @@ def split_into_blocks_decrypt(data, private_key):
                 label=None
             )
         )
+
         decrypted += decrypted_block
+
     return decrypted
