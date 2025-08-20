@@ -5,11 +5,10 @@ import re
 import os
 
 # VPN configuration
-VERSION = "X25519"
 VPN_TARGET_IP = "192.168.60.7"
-VPN_CLIENT_CONTAINER = f"{VERSION}-client-10.9.0.5"
-VPN_SERVER_CONTAINER = f"{VERSION}-server-router"
-PRIVATE_HOST_CONTAINER = f"{VERSION}-host-192.168.60.7"
+VPN_CLIENT_CONTAINER = "client-10.9.0.5"
+VPN_SERVER_CONTAINER = "server-router"
+PRIVATE_HOST_CONTAINER = "host-192.168.60.7"
 LOG_FILE = "vpn_benchmark_results.csv"
 
 

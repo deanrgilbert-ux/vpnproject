@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import fcntl, struct, os
+import os
 from scapy.all import *
 from shared.create_tun import create_tun
 from shared.crypto.encrypt import encrypt
@@ -41,8 +41,8 @@ sock.bind((IP_A, PORT))
 ip = "10.0.0.1"
 
 # Get X25519 keys
-server_private_key = load_private_key("/keys/x-server_private.pem")
-client_public_key = load_public_key("/keys/x-client_public.pem")
+server_private_key = load_private_key("/keys/X25519/x-server_private.pem")
+client_public_key = load_public_key("/keys/X25519/x-client_public.pem")
 
 while True:
     # this will block until at least one interface is ready

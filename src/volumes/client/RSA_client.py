@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import logging
-import os, socket, struct, fcntl, select
+import os, socket, select
 from scapy.all import * # Used for deserializing network data (IP Packets) so their data can be used by the program.
 from shared.create_tun import create_tun
-from shared.crypto.encrypt import split_into_blocks_encrypt, load_public_key
-from shared.crypto.decrypt import split_into_blocks_decrypt, load_private_key
+from shared.crypto.encrypt import split_into_blocks_encrypt
+from shared.crypto.decrypt import split_into_blocks_decrypt
+from shared.crypto.tools import load_public_key, load_private_key
 
 # Logging setup
 logging.basicConfig(
@@ -36,8 +37,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ip = "10.0.0.1"
 
 # Get RSA keys
-server_public_key = load_public_key("/keys/server_public.pem")
-client_private_key = load_private_key("/keys/client_private.pem")
+server_public_key = load_public_key("/keys/RSA/server_public.pem")
+client_private_key = load_private_key("/keys/RSA/client_private.pem")
 
 while True:
     # this will block until at least one interface is ready

@@ -30,6 +30,7 @@ os.system(f"ip addr add {TUN_IP}/24 dev {ifname}")
 os.system(f"ip link set dev {ifname} up")
 
 class VPNServerProtocol:
+    # These are Async streamreader/writers
     def __init__(self, reader, writer):
         self.reader = reader
         self.writer = writer
@@ -37,8 +38,8 @@ class VPNServerProtocol:
     async def recv_from_client(self):
         while True:
             try:
-                length_bytes = await self.reader.readexactly(2)
-                pkt_len = struct.unpack("!H", length_bytes)[0]
+                length_bytes = await self.reader.readexactly(2) # Read exactly 2 bytes.
+                pkt_len = struct.unpack("!H", length_bytes)[0] #! = network (big-endian), H = unsigned short.
                 data = await self.reader.readexactly(pkt_len)
 
                 pkt = IP(data)

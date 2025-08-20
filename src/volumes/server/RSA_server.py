@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import fcntl, struct, os
+import os
 from scapy.all import *
 from shared.create_tun import create_tun
 from shared.crypto.encrypt import split_into_blocks_encrypt, load_public_key
@@ -41,8 +41,8 @@ sock.bind((IP_A, PORT)) # Binds this socket to the external network address (and
 ip = "10.0.0.1"
 
 # Get RSA keys
-server_private_key = load_private_key("/keys/server_private.pem")
-client_public_key = load_public_key("/keys/client_public.pem")
+server_private_key = load_private_key("/keys/RSA/server_private.pem")
+client_public_key = load_public_key("/keys/RSA/client_public.pem")
 
 while True:
     # this will block until at least one interface is ready

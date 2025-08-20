@@ -3,8 +3,8 @@ services:
         build:
           context: .
           dockerfile: Dockerfile
-        image: handsonsecurity/seed-ubuntu:large
-        container_name: RSA-client-10.9.0.5
+        image: vpnproject/seed-ubuntu:large
+        container_name: client-10.9.0.5
         tty: true
         cap_add:
                 - ALL
@@ -25,8 +25,8 @@ services:
         build:
           context: .
           dockerfile: Dockerfile
-        image: handsonsecurity/seed-ubuntu:large
-        container_name: RSA-host-192.168.60.7
+        image: vpnproject/seed-ubuntu:large
+        container_name: host-192.168.60.7
         tty: true
         cap_add:
                 - ALL
@@ -44,8 +44,8 @@ services:
         build:
           context: .
           dockerfile: Dockerfile
-        image: handsonsecurity/seed-ubuntu:large
-        container_name: RSA-server-router
+        image: vpnproject/seed-ubuntu:large
+        container_name: server-router
         tty: true
         cap_add:
                 - ALL
@@ -54,13 +54,16 @@ services:
         sysctls:
                 - net.ipv4.ip_forward=1
         volumes:
-          - ./volumes:/volumes
-          - ./keys:/keys
+                - ./volumes:/volumes
+                - ./keys:/keys
+        ports:
+                - "4433:4433/udp"
         networks:
             net-10.9.0.0:
                 ipv4_address: 10.9.0.11
             net-192.168.60.0:
                 ipv4_address: 192.168.60.11
+            bridge: {}
         command: bash -c "
                       ip route del default  &&
                       ip route add default via 10.9.0.1 &&
@@ -80,3 +83,5 @@ networks:
             config:
                 - subnet: 10.9.0.0/24
 
+    bridge:
+        driver: bridge

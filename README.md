@@ -38,11 +38,11 @@ openssl pkey -in keys/x-client_private.pem -pubout -out keys/x-client_public.pem
 docker exec -it RSA-client-10.9.0.5 ping 192.168.60.7
 
 # Start VPN client and server
-docker exec -it RSA-client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py &
-docker exec -it RSA-server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py &
+docker exec -it client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py &
+docker exec -it server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py &
 
 # Validate the connectivity between client and internal host
-docker exec -it RSA-client-10.9.0.5  ping 192.168.60.7
+docker exec -it client-10.9.0.5  ping 192.168.60.7
 ```
 ```shell
 # To run benchmarking (bash terminals or similar)
@@ -52,8 +52,8 @@ do
     cd $dir
     docker-compose build
     docker-compose up -d
-    docker exec -itd ${dir}-client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py
-    docker exec -itd ${dir}-server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py
+    docker exec -itd client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/${dir}-client.py
+    docker exec -itd server-router env PYTHONPATH=/volumes python3 /volumes/server/${dir}-server.py
     python3 benchmark/run_tests.py > /dev/null
     docker-compose kill
     docker-compose down

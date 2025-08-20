@@ -5,18 +5,24 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
 import os
 
-AES_KEY_SIZE = 32   # AES-256-GCM
-NONCE_SIZE = 12     # GCM nonce 12 * 8 = 96 bits
-
+# Load specified public key. Returns an RSAPublicKey or X25519PublicKey depending on the type contained in the PEM file.
 def load_public_key(filename):
     with open(filename, "rb") as f:
         return serialization.load_pem_public_key(f.read(), backend=default_backend())
 
+# Load specified private key. Returns an RSAPrivateKey or X25519PrivateKey depending on the type contained in the PEM file.
 def load_private_key(filename):
     with open(filename, "rb") as f:
         return serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
+    
+# ----------------
+# AES (X25519)
+# ----------------
 
-# Derive AES key from shared secret
+AES_KEY_SIZE = 32   # AES-256-GCM
+NONCE_SIZE = 12     # GCM nonce 12 * 8 = 96 bits
+
+# Derive AES key from shared secret. Used for X25519 encryption/decryption.
 def derive_shared_key(private_key, peer_public_key):
     shared_secret = private_key.exchange(peer_public_key)
     return HKDF(

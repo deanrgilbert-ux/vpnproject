@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, socket, struct, fcntl, select
+import os, socket, select
 from scapy.all import *
 from shared.create_tun import create_tun
 from shared.crypto.encrypt import encrypt
@@ -33,8 +33,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ip = "10.0.0.1"
 
 # Get X25519 keys
-server_public_key = load_public_key("/keys/x-server_public.pem")
-client_private_key = load_private_key("/keys/x-client_private.pem")
+server_public_key = load_public_key("/keys/X25519/x-server_public.pem")
+client_private_key = load_private_key("/keys/X25519/x-client_private.pem")
 
 while True:
     # this will block until at least one interface is ready
