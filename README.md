@@ -35,27 +35,33 @@ docker exec -it client-10.9.0.5 ping 192.168.60.7
 
 # Start VPN client and server
 docker exec -it client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/${version}_client.py &
-docker exec -it server-router env PYTHONPATH=/volumes python3 /volumes/server/${version}server.py &
+docker exec -it server-router env PYTHONPATH=/volumes python3 /volumes/server/${version}_server.py &
 
 # Validate the connectivity between client and internal host
 docker exec -it client-10.9.0.5  ping 192.168.60.7
 ```
+Benchmarking needs to be run from the src directory, and should be run on the host machine (not within the containers).
+
+To quickly perform benchmarking, run the `benchmark.sh` script. 
+
 ```shell
+docker-compose build
+docker-compose up -d
+
+versions=("RSA" "QUIC" "X25519")
+
 # To run benchmarking (bash terminals or similar)
-for dir in $(ls -d */ | sed 's/\///g');
+for version in "${versions[@]}";
 do
-    pushd .
-    cd $dir
-    docker-compose build
-    docker-compose up -d
-    docker exec -itd client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/${dir}-client.py
-    docker exec -itd server-router env PYTHONPATH=/volumes python3 /volumes/server/${dir}-server.py
-    python3 benchmark/run_tests.py > /dev/null
-    docker-compose kill
-    docker-compose down
-    popd
+    docker exec -itd client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/${version}_client.py
+    docker exec -itd server-router env PYTHONPATH=/volumes python3 /volumes/server/${version}_server.py
+    python3 benchmark/run_tests.py ${version} > /dev/null
 done
+
+docker-compose kill
+docker-compose down
 ```
+
 ```PowerShell
 # To run benchmarking (PowerShell)
 $dirs = gci -Directory

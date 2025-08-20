@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import subprocess
 import time
 import csv
@@ -7,11 +8,12 @@ import re
 import os
 
 # VPN configuration
+VERSION = sys.argv[1]
 VPN_TARGET_IP = "192.168.60.7"
 VPN_CLIENT_CONTAINER = "client-10.9.0.5"
 VPN_SERVER_CONTAINER = "server-router"
 PRIVATE_HOST_CONTAINER = "host-192.168.60.7"
-LOG_FILE = "vpn_benchmark_results.csv"
+LOG_FILE = f"benchmark/{VERSION}_vpn_benchmark_results.csv"
 
 
 def run_cmd(cmd, capture_output=False):
@@ -60,6 +62,7 @@ def log_result(test_type, metric, value):
 
 
 def run_ping_test():
+    print("Running Ping test.")
     result = run_cmd(f'docker exec {VPN_CLIENT_CONTAINER} ping -c 5 {VPN_TARGET_IP}', capture_output=True)
     time.sleep(3)
     metrics = parse_ping_output(result.stdout)
@@ -68,6 +71,7 @@ def run_ping_test():
 
 
 def run_iperf_tcp_test():
+    print("Running iperf TCP test.")
     run_cmd(f'docker exec {PRIVATE_HOST_CONTAINER} pkill iperf3 || true')
     run_cmd(f'docker exec -d {PRIVATE_HOST_CONTAINER} iperf3 -s')
     time.sleep(2)
@@ -79,6 +83,7 @@ def run_iperf_tcp_test():
 
 
 def run_iperf_udp_test():
+    print("Running iperf UDP test.")
     run_cmd(f'docker exec {PRIVATE_HOST_CONTAINER} pkill iperf3 || true')
     run_cmd(f'docker exec -d {PRIVATE_HOST_CONTAINER} iperf3 -s')
     time.sleep(2)
@@ -89,6 +94,7 @@ def run_iperf_udp_test():
 
 
 def run_concurrent_load():
+    print("Running concurrent load test.")
     ping_proc = subprocess.Popen(
         f'docker exec {VPN_CLIENT_CONTAINER} ping -i 0.2 -c 20 {VPN_TARGET_IP}',
         shell=True
@@ -104,6 +110,7 @@ def run_concurrent_load():
 
 
 def check_cpu_memory():
+    print("Checking CPU and Memory.")
     result = run_cmd(
         f'docker exec {VPN_SERVER_CONTAINER} ps -C python3 -o rss,vsz,%cpu,%mem,cmd',
         capture_output=True
@@ -117,9 +124,11 @@ def init_log():
             writer = csv.writer(f)
             writer.writerow(["test_type", "metric", "value"])
 
+    print("Log setup.")
+
 
 def main():
-    print("Starting VPN Benchmarking")
+    print(f"Starting VPN Benchmarking ({VERSION})")
     init_log()
 
     check_cpu_memory()
@@ -128,7 +137,7 @@ def main():
     run_iperf_udp_test()
     run_concurrent_load()
 
-    print("\nBenchmark Complete. Results saved in:", LOG_FILE)
+    print(f"\nBenchmark Complete. Results saved in: {LOG_FILE}\n")
 
 
 if __name__ == "__main__":

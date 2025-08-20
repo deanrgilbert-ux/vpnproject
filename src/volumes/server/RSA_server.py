@@ -3,8 +3,9 @@
 import os
 from scapy.all import *
 from shared.create_tun import create_tun
-from shared.crypto.encrypt import split_into_blocks_encrypt, load_public_key
-from shared.crypto.decrypt import split_into_blocks_decrypt, load_private_key
+from shared.crypto.encrypt import split_into_blocks_encrypt
+from shared.crypto.decrypt import split_into_blocks_decrypt
+from shared.crypto.tools import load_public_key, load_private_key
 
 # Logging setup
 logging.basicConfig(
