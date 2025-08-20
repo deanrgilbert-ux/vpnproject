@@ -10,36 +10,32 @@ This VPN is deployed in preconfigured Docker containers running Linux across two
 ![Diagram of VPN system architecture with VPN client off](images/inactive.png)
 
 ### Running the VPN
-Enter the desired directory (i.e. `./RSA`, `./QUIC` or `./X25519`).
 ```shell
+version="RSA" # Select version, use "RSA", "QUIC", or "X25519"
+
 docker-compose build
 docker-compose up -d
 
 # Generate RSA keys for RSA version
 mkdir keys
-openssl genrsa -out keys/server_private.pem 2048
-openssl rsa -in keys/server_private.pem -outform PEM -pubout -out keys/server_public.pem
-openssl genrsa -out keys/client_private.pem 2048
-openssl rsa -in keys/client_private.pem -outform PEM -pubout -out keys/client_public.pem
+openssl genrsa -out keys/RSA/server_private.pem 2048
+openssl rsa -in keys/RSA/server_private.pem -outform PEM -pubout -out keys/server_public.pem
+openssl genrsa -out keys/RSA/client_private.pem 2048
+openssl rsa -in keys/RSA/client_private.pem -outform PEM -pubout -out keys/client_public.pem
 
 # For X25519
 mkdir keys
-openssl genpkey -algorithm X25519 -out keys/x-server_private.pem
-openssl pkey -in keys/x-server_private.pem -pubout -out keys/x-server_public.pem
-openssl genpkey -algorithm X25519 -out keys/x-client_private.pem
-openssl pkey -in keys/x-client_private.pem -pubout -out keys/x-client_public.pem
-
-# All containers are prefixed with their version names
-# For the QUIC implementation, prefix container names with "QUIC-"
-# For the RSA implementation, prefix container names with "RSA-"
-# For the X25519 implementation, prefix container names with "X25519-"
+openssl genpkey -algorithm X25519 -out keys/X25519/x-server_private.pem
+openssl pkey -in keys/x-server_private.pem -pubout -out keys/X25519/x-server_public.pem
+openssl genpkey -algorithm X25519 -out keys/X25519/x-client_private.pem
+openssl pkey -in keys/x-client_private.pem -pubout -out keys/X25519/x-client_public.pem
 
 # Validate no connectivity between client and internal host
-docker exec -it RSA-client-10.9.0.5 ping 192.168.60.7
+docker exec -it client-10.9.0.5 ping 192.168.60.7
 
 # Start VPN client and server
-docker exec -it client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/client.py &
-docker exec -it server-router env PYTHONPATH=/volumes python3 /volumes/server/server.py &
+docker exec -it client-10.9.0.5 env PYTHONPATH=/volumes python3 /volumes/client/${version}_client.py &
+docker exec -it server-router env PYTHONPATH=/volumes python3 /volumes/server/${version}server.py &
 
 # Validate the connectivity between client and internal host
 docker exec -it client-10.9.0.5  ping 192.168.60.7
