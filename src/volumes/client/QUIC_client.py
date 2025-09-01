@@ -3,7 +3,6 @@
 import asyncio
 import os
 import struct
-import fcntl
 import logging
 from scapy.all import *
 from aioquic.asyncio import connect

@@ -3,7 +3,6 @@
 import asyncio
 import os
 import struct
-import fcntl
 from scapy.all import *
 from aioquic.asyncio import serve
 from aioquic.quic.configuration import QuicConfiguration

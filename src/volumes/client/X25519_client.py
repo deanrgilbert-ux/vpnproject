@@ -29,9 +29,6 @@ os.system("ip route add 192.168.60.0/24 dev {}".format(ifname))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# Set a default value for ip to avoid error
-ip = "10.0.0.1"
-
 # Get X25519 keys
 server_public_key = load_public_key("/keys/X25519/x-server_public.pem")
 client_private_key = load_private_key("/keys/X25519/x-client_private.pem")

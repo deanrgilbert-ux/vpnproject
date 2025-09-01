@@ -38,9 +38,6 @@ PORT = 9090 # The port to use between client and server.
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((IP_A, PORT)) # Binds this socket to the external network address (and port).
 
-# Set default ip to avoid error
-ip = "10.0.0.1"
-
 # Get RSA keys
 server_private_key = load_private_key("/keys/RSA/server_private.pem")
 client_public_key = load_public_key("/keys/RSA/client_public.pem")

@@ -37,9 +37,6 @@ PORT = 9090
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((IP_A, PORT))
 
-# Set default ip to avoid error
-ip = "10.0.0.1"
-
 # Get X25519 keys
 server_private_key = load_private_key("/keys/X25519/x-server_private.pem")
 client_public_key = load_public_key("/keys/X25519/x-client_public.pem")

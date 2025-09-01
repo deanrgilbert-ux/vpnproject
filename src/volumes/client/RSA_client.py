@@ -33,9 +33,6 @@ os.system("ip route add 192.168.60.0/24 dev {}".format(ifname)) # Add the route 
 # SOCK_DGRAM indicates to use UDP as we're using IP based protocols in both socket and interface.
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# Set a default value for ip to avoid error
-ip = "10.0.0.1"
-
 # Get RSA keys
 server_public_key = load_public_key("/keys/RSA/server_public.pem")
 client_private_key = load_private_key("/keys/RSA/client_private.pem")
