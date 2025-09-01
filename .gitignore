@@ -1,4 +1,4 @@
 __pycache__/
 .idea/
-RSA/keys/
-/X25519/keys/
+*/keys/
+*.log
