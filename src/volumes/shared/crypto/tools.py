@@ -32,3 +32,14 @@ def derive_shared_key(private_key, peer_public_key):
         info=b'vpn tunnel',
         backend=default_backend()
     ).derive(shared_secret)
+
+# ----------------
+# PQC
+# ----------------
+
+def load_kyber_pubkey(filename: str):
+    with open(filename, "rb") as f:
+        return
+
+def generate_keypair(pubkeyfilename: str):
+    pass

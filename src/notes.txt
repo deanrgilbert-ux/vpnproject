@@ -1,0 +1,13 @@
+docker exec --env flag could be used to provide environment variables, including display variables? which could allow x11 passthrough; i don't know if this will work on windows correctly but in theory it should be fine right - x11 in container sends to wsl, x11 in wsl sends to windows, window renders?
+
+TODO:
+- Successfully save a keypair in the required format.
+- Successfully load a keypair.
+- Both sides generate the symmetric
+- Save the symmetric key and begin using that for all future communication.
+
+- THIS REQUIES A HANDSHAKE OF SOME DESCRIPTION TO ENSURE THE SERVER CAN BE IN CONTROL OF THE KEY
+
+X25519 client/server uses their keypair exclusively to derive a key; they already have a copy of the relevant public key and they just use those to derive the private key.
+For the sake of getting something up and running, ML-KEM implementation should do the same.
+
