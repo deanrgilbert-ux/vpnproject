@@ -1,4 +1,4 @@
-import oqs, os, base64
+import os, base64
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
@@ -25,28 +25,32 @@ def aes_encrypt(plaintext: bytes, key: bytes) -> bytes:
         backend=default_backend()
     ).encryptor()
     ciphertext = encryptor.update(plaintext) + encryptor.finalize()
+    print(f"nonce {nonce}\n tag {encryptor.tag}\n ciphertext {ciphertext}")
     return nonce + encryptor.tag + ciphertext
 
 def aes_decrypt(ciphertext: bytes, key: bytes) -> bytes:
     nonce = ciphertext[:NONCE_SIZE]
     tag = ciphertext[NONCE_SIZE:NONCE_SIZE+16]
     ct = ciphertext[NONCE_SIZE+16:]
+    print(f"nonce {nonce}\n tag {tag}\n ciphertext {ct}")
     decryptor = Cipher(
         algorithms.AES(key),
-        modes.GCM(nonce, tag),
+        modes.GCM(nonce),
         backend=default_backend()
     ).decryptor()
-    return decryptor.update(ct) + decryptor.finalize()
+    plaintext = decryptor.update(ct) + decryptor.finalize_with_tag(tag)
+    return plaintext
 
-def export_secret_key_pem(secret_key: bytes, filename: str):
-    encoded_secret_key = base64.b64encode(secret_key).decode("ascii")
+def export_mlkem_pem(key: bytes, filename: str, type: str = "PRIVATE"):
+    encoded_key = base64.b64encode(key).decode("ascii")
     with open(filename, "w+") as file:
-        file.write(f"-----BEGIN PRIVATE KEY-----\n{encoded_secret_key}\n-----END PRIVATE KEY-----")
+        file.write(f"-----BEGIN {type} KEY-----\n{encoded_key}\n-----END {type} KEY-----")
 
-def import_secret_key_pem(filename: str) -> bytes:
+def import_mlkem_pem(filename: str) -> bytes:
     with open(filename, "r") as file:
         pem_content: list[str] = file.read().split("-----")
-        if "BEGIN" in pem_content[1] and "END" in pem_content[3]:
+        if (pem_content[1] == "BEGIN PUBLIC KEY" or pem_content[1] == "BEGIN PRIVATE KEY") and \
+            (pem_content[3] == "END PUBLIC KEY" or pem_content[3] == "END PRIVATE KEY"):
             return base64.b64decode(pem_content[2].encode("ascii"))
         else:
             raise ValueError("File is not in valid PEM format.")
