@@ -39,9 +39,9 @@ def aes_decrypt(ciphertext: bytes, key: bytes) -> bytes:
     return decryptor.update(ct) + decryptor.finalize()
 
 def export_secret_key_pem(secret_key: bytes, filename: str):
-    encoded_secret_key = base64.b64encode(secret_key).decode("ascii")
-    with open(filename, "w+") as file:
-        file.write(f"-----BEGIN PRIVATE KEY-----\n{encoded_secret_key}\n-----END PRIVATE KEY-----")
+    #encoded_secret_key = base64.b64encode(secret_key).decode("ascii")
+    with open(filename, "wb+") as file:
+        file.write(b"-----BEGIN PRIVATE KEY-----\n" + secret_key + b"\n-----END PRIVATE KEY-----")
 
 # Create client and generate keys
 client = oqs.KeyEncapsulation(ALGORITHM)
