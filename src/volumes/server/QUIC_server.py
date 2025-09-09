@@ -7,7 +7,7 @@ from scapy.all import *
 from aioquic.asyncio import serve
 from aioquic.quic.configuration import QuicConfiguration
 from shared.create_tun import create_tun
-from generate_cert import generate_self_signed_cert
+from volumes.tools.generate_cert import generate_self_signed_cert
 
 # Logging setup
 logging.basicConfig(

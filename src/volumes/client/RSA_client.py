@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-import logging
-import os, socket, select
+import logging, os, socket, select
 from scapy.all import * # Used for deserializing network data (IP Packets) so their data can be used by the program.
 from shared.create_tun import create_tun
-from shared.crypto.encrypt import split_into_blocks_encrypt
-from shared.crypto.decrypt import split_into_blocks_decrypt
+from shared.crypto.encrypt import rsa_encrypt
+from shared.crypto.decrypt import rsa_decrypt
 from shared.crypto.tools import load_public_key, load_private_key
 
 # Logging setup
@@ -47,7 +46,7 @@ while True:
             try:
                 # Receive and decrypt data, writing to the tunnel interface.
                 data, (ip, port) = sock.recvfrom(2048)
-                decrypted_data = split_into_blocks_decrypt(data, client_private_key)
+                decrypted_data = rsa_decrypt(data, client_private_key)
                 pkt = IP(decrypted_data)
                 logger.info("From socket (VPN SERVER) <==: {} --> {}".format(pkt.src, pkt.dst))
                 os.write(tun, decrypted_data)
@@ -60,7 +59,7 @@ while True:
                 packet = os.read(tun, 2048)
                 pkt = IP(packet)
                 logger.info("From tun (THIS HOST) ==>: {} --> {}".format(pkt.src, pkt.dst))
-                encrypted_data = split_into_blocks_encrypt(packet, server_public_key) # RSA
+                encrypted_data = rsa_encrypt(packet, server_public_key) # RSA
                 sock.sendto(encrypted_data, ("10.9.0.11", 9090))
             except Exception as e:
                 logging.exception(f"Error encrypting from tun: {e}")
