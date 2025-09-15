@@ -42,25 +42,24 @@ client_addr = None
 client_connected = False
 i = 0
 
-while True:
-    # Handle the initial connection.
-    if client_connected is False:
-        # Receive data from socket
-        buf = sock.recvfrom(2048)
-        if len(buf) > 0: 
-            # this is a CLIENT HELLO packet
-            if buf[0][0:12] == b"CLIENT HELLO":
-                shared_secret = server.decap_secret(buf[0][12:])
-                sym_key = derive_shared_key(shared_secret)
-                client_addr = buf[1]
-                sock.sendto(b"SERVER HELLO" + aes_mlkem_encrypt(b"SHARED SECRET CONFIRMATION", sym_key), client_addr)
-                continue
+# Handle the initial connection.
+while client_connected is False:
+     # Receive data from socket
+    data, (ip, port) = sock.recvfrom(2048)
+    if len(data) > 0: 
+        # this is a CLIENT HELLO packet
+        if data[0:12] == b"CLIENT HELLO":
+            shared_secret = server.decap_secret(data[12:])
+            sym_key = derive_shared_key(shared_secret)
+            client_addr = (ip, port)
+            sock.sendto(b"SERVER HELLO" + aes_mlkem_encrypt(b"SHARED SECRET CONFIRMATION", sym_key), client_addr)
+            continue
 
-            # if not, must be a client ack packet.
-            if sym_key is not None and aes_mlkem_decrypt(buf[0], sym_key) == b"SHARED SECRET CONFIRMED" and buf[1] == client_addr:
-                client_connected = True
-                continue
-    
+        # if not, must be a client ack packet.
+        if sym_key is not None and aes_mlkem_decrypt(data, sym_key) == b"SHARED SECRET CONFIRMED" and (ip, port) == client_addr:
+            client_connected = True
+
+while True:    
     # this will block until at least one interface is ready
     ready, _, _ = select.select([sock, tun], [], [])
     for fd in ready:

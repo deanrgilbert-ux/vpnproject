@@ -55,16 +55,15 @@ ciphertext = aes_mlkem_encrypt(message, sym_key)
 
 server_connected = False
 
-while True:
-    if server_connected is False:
-        buf = sock.recvfrom(2048)
-        if len(buf) > 0:
-            if buf[1] == server_addr and buf[0][0:12] == b"SERVER HELLO":
-                if aes_mlkem_decrypt(buf[0][12:], sym_key) == b"SHARED SECRET CONFIRMATION":
-                    sock.sendto(aes_mlkem_encrypt(b"SHARED SECRET CONFIRMED", sym_key), server_addr)
-                    server_connected = True
-                    continue
+while server_connected is False:
+    data, (ip, port) = sock.recvfrom(2048)
+    if len(data) > 0:
+        if (ip, port) == server_addr and data[0:12] == b"SERVER HELLO" and \
+            aes_mlkem_decrypt(data[12:], sym_key) == b"SHARED SECRET CONFIRMATION":
+            sock.sendto(aes_mlkem_encrypt(b"SHARED SECRET CONFIRMED", sym_key), server_addr)
+            server_connected = True
 
+while True:
     ready, _, _ = select.select([sock, tun], [], [])
     for fd in ready:
         if fd is sock:
